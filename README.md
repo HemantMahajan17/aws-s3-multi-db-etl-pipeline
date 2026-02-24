@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # AWS Data Pipeline
 
 ## Architecture
@@ -43,4 +42,4 @@ RECEIVER_EMAIL
 3. Create Lambda functions
 4. Attach layers
 5. Configure S3 trigger
-=======
+6. Verify SES
