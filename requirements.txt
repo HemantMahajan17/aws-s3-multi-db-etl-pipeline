@@ -1,3 +1,8 @@
+<<<<<<< HEAD
 pymysql
 pymssql
+=======
+pymysql
+pymssql
+>>>>>>> 26b5ae4924b9e1eeec3e5d462ff58810aecb59bd
 snowflake-connector-python
