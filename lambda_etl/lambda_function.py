@@ -12,8 +12,8 @@ def lambda_handler(event, context):
 
     try:
         # ========= 1️⃣ READ FILE FROM S3 =========
-        bucket = event['Records'][0]['s3']['bucket']['name']
-        key = event['Records'][0]['s3']['object']['key']
+        bucket = "api-s3-offline10"
+        key = "api_data_.json"
 
         obj = s3.get_object(Bucket=bucket, Key=key)
         content = obj['Body'].read().decode('utf-8')
@@ -21,9 +21,9 @@ def lambda_handler(event, context):
 
         # ========= 2️⃣ INSERT INTO MYSQL =========
         mysql_conn = pymysql.connect(
-            host=os.environ['MYSQL_HOST'],
-            user=os.environ['MYSQL_USER'],
-            password=os.environ['MYSQL_PASSWORD'],
+            host=os.environ['pipelines3tomysql.c1w8km2uqjqp.ap-south-1.rds.amazonaws.com'],
+            user=os.environ['admin'],
+            password=os.environ['Admin#2025'],
             database="pipelines3tomysql"
         )
 
@@ -56,9 +56,9 @@ def lambda_handler(event, context):
         mysql_rows = mysql_cursor.fetchall()
 
         mssql_conn = pymssql.connect(
-            server=os.environ['MSSQL_HOST'],
-            user=os.environ['MSSQL_USER'],
-            password=os.environ['MSSQL_PASSWORD'],
+            server=os.environ['pipelines3tomssql.c1w8km2uqjqp.ap-south-1.rds.amazonaws.com'],
+            user=os.environ['admin'],
+            password=os.environ['Admin#2025'],
             database="pipelines3tomssql"
         )
 
@@ -67,6 +67,7 @@ def lambda_handler(event, context):
 
         for row in mysql_rows:
             try:
+                cursor.execute(f"TRUNCATE TABLE {MSSQL_TABLE}")
                 mssql_cursor.execute("""
                     INSERT INTO Cust_data (userId, id, title, body)
                     VALUES (%s, %s, %s, %s)
@@ -85,13 +86,15 @@ def lambda_handler(event, context):
         mssql_rows = mssql_cursor.fetchall()
 
         snow_conn = snowflake.connector.connect(
-            user=os.environ['SNOW_USER'],
-            password=os.environ['SNOW_PASSWORD'],
-            account=os.environ['SNOW_ACCOUNT'],
-            warehouse=os.environ['SNOW_WAREHOUSE'],
-            database=os.environ['SNOW_DB'],
+            user=os.environ['HPMAHAJAN2013'],
+            password=os.environ['4NH6idN4PNkM6Fb'],
+            account=os.environ['GORPSJO-ZH89279'],
+            warehouse=os.environ['COMPUTE_WH'],
+            database=os.environ['PIPELINE_DB'],
             schema='PUBLIC'
         )
+
+        
 
         snow_cursor = snow_conn.cursor()
         inserted_snow = 0
@@ -125,8 +128,8 @@ def lambda_handler(event, context):
 def send_email(subject, message):
 
     ses.send_email(
-        Source=os.environ['SENDER_EMAIL'],
-        Destination={'ToAddresses': [os.environ['RECEIVER_EMAIL']]},
+        Source=os.environ['hpmahajan2013@gmail.com'],
+        Destination={'ToAddresses': [os.environ['hpmahajan2013@gmail.com']]},
         Message={
             'Subject': {'Data': subject},
             'Body': {'Text': {'Data': message}}
